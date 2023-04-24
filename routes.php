@@ -1,7 +1,7 @@
 <?php
 
+use App\Controller\AuthorController;
 use App\Controller\BookController;
-use App\Controller\BookVersionInfoController;
 use App\Controller\BookVersionController;
 use App\Controller\LibraryController;
 use App\Controller\TagController;
@@ -9,9 +9,6 @@ use App\Controller\WishListController;
 
 // ***************library**********************
 // ***get
-
-// get library by user
-$router->get('/api/library/{id}',[LibraryController::class,'getLibrary']);
 
 // get all book in library by user
 $router->get('/api/library/{id}',[LibraryController::class,'getbooks']);
@@ -22,17 +19,33 @@ $router->get('/api/library/book/version/number/{id}',[LibraryController::class,'
 // get number of books versions by statut in library
 $router->get('/api/library/book/version/statut/number/{id}',[LibraryController::class,'getNumberBooksVersionsByStatut']);
 
+// get info by book version
+$router->get('/api/library/book/version/info/{id}',[LibraryController::class,'getInfoByBookVersion']);
 
 // ***post
 
 // instert book version in library
 $router->post('/api/library/book/version/',[LibraryController::class,'addBookVersion']);
 
+//  ***put
+
+// update statut,note,comment by book version
+$router->put('/api/library/book/version/info/',[LibraryController::class,'updateInfoByBookVersion']);
+
+// update note in book version
+$router->put('/api/library/book/version/info/note',[LibraryController::class,'updateNoteByBookVersion']);
+
+// update comment in book version
+$router->put('/api/library/book/version/info/comment',[LibraryController::class,'updatecommentByBookVersion']);
+
+// update comment in book version
+$router->put('/api/library/book/version/info/statut',[LibraryController::class,'updateStatutIdByBookVersion']);
+;
 
 
 // ***************wishlist**********************
 // ***get
-// get wishlist by user
+// get book version by user
 $router->get('/api/wishlist/{id}',[WishListController::class,'getWishList']);
 
 // ***post
@@ -55,31 +68,15 @@ $router->get('/api/book/version/publisher/{id}',[BookVersionController::class,'g
 // get books version by tag id
 $router->get('/api/book/version/tag/{id}',[BookVersionController::class,'getAllBookVersionByPublisher']);
 
-// get info by book version
-$router->get('/api/book/version/info/{id}',[BookVersionInfoController::class,'getInfo']);
 
 // ***post
 
 // create book version
 $router->post('/api/book/version/',[BookVersionController::class,'create']);
 
-// create statut,note,comment by book version 
-$router->post('/api/book/version/info/',[BookVersionInfoController::class,'create']);
 
-//  ***put
 
-// update statut,note,comment by book version
-$router->put('/api/book/version/info/',[BookVersionInfoController::class,'update']);
 
-// update note in book version
-$router->put('/api/book/version/info/note',[BookVersionInfoController::class,'updateNote']);
-
-// update comment in book version
-$router->put('/api/book/version/info/comment',[BookVersionInfoController::class,'updatecomment']);
-
-// update comment in book version
-$router->put('/api/book/version/info/statut',[BookVersionInfoController::class,'updateStatut']);
-;
 
 // ***************book**********************
 
@@ -106,4 +103,5 @@ $router->delete('/api/book/{bookId}/tag/{tagId}',[TagController::class,'delete']
 // ***post
 // create tag
 $router->post('/api/book/tag/',[TagController::class,'create']);
+
 
