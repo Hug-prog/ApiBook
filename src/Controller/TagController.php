@@ -1,7 +1,9 @@
 <?php
 namespace App\Controller;
-use PDO;
-use App\Db\Cnx;
+
+use App\Actions\ActionsBdd;
+use App\Actions\Cnx;
+use App\Model\Model;
 use PDOException;
 use Illuminate\Http\Request;
 
@@ -11,14 +13,8 @@ class TagController
    {
      $book_id = $request->book_id;
      $tag_id = $request->tag_id;
-     try {    
-      $cnx =Cnx::get();
-      $req = $cnx->prepare("INSERT INTO `book_tag` (`book_id`, `tag_id`) VALUES ('$book_id','$tag_id');");
-      $req->execute();
-      } catch (PDOException $e) {
-         print('tag exist ');
-         die();
-      }
+     $data = [$book_id,$tag_id];
+     return ActionsBdd::insertData('book_tag',Model::getTagsModel(),$data);
    }
 
    public function delete($bookId,$tagId)

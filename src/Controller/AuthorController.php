@@ -1,8 +1,10 @@
 <?php
 namespace App\Controller;
-use App\Db\Cnx;
-use App\Db\ActionsBdd;
-use PDOException;
+
+use App\Actions\ActionsBdd;
+use App\Model\Model;
+
+use Illuminate\Http\Request;
 
 class AuthorController
 {
@@ -11,19 +13,12 @@ class AuthorController
       return  ActionsBdd::getItemById('author',$author_id,'author_id');
    }
 
-   public static function create($author)
+   public static function create(Request $request)
    {
-      try { 
-        
-         $cnx =Cnx::get();
-         $req = $cnx->prepare("INSERT INTO `author` (`author_id`, `author_first_name`, `author_last_name`) VALUES (null,'{$author['author_first_name']}','{$author["author_last_name"]}');");
-         $req->execute();
-         return $cnx->lastInsertId();
-     
-     } catch (PDOException $e) {
-         print('author exist ');
-         die();
-     }
+      $author_first_name = $request->author_first_name;
+      $author_last_name = $request->author_last_name ;
+      $data = [$author_first_name,$author_last_name];
+      return ActionsBdd::insertData('author',Model::getAuthorModel(),$data);
    }
 
 

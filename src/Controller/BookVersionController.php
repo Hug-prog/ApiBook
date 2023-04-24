@@ -1,13 +1,14 @@
 <?php
 namespace App\Controller;
 
+use App\Actions\ActionsBdd;
 use PDO;
-use App\Db\Cnx;
+use App\Actions\Cnx;
+use App\Model\Model;
+use DateTime;
 use PDOException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
-
+use Symfony\Component\VarDumper\Cloner\VarCloner;
 
 class BookVersionController
 {
@@ -108,14 +109,10 @@ class BookVersionController
       $edition_id = $request->edition_id;
       $book_id = $request->book_id;
       
-      try { 
-         $cnx =Cnx::get();
-         $req = $cnx->prepare("INSERT INTO `book_version` (`book_version_id`, `publisher_id`,`edition_id`,`book_id`) VALUES (null,'$publisher_id','$edition_id','$book_id');");
-         $req->execute();
-      } catch (PDOException $e) {
-         print('book_version exist ');
-         die();
-      }
+      $date = date('Y/m/d');
 
+      $data = [$date,$publisher_id,$edition_id,$book_id];
+
+      return ActionsBdd::insertData('book_version',Model::getBookVersionModel(),$data);
    }
 }
