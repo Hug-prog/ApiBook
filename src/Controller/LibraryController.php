@@ -51,14 +51,12 @@ use Illuminate\Http\Request;
 
       public function getNumberBooksVersionsByStatut($user_id)
       {
-         var_dump('ok');
          try {
             $cnx = Cnx::get();
-            $req = $cnx->prepare("
-                  SELECT 
-                  COUNT(IF(library.statut_id == 1) ‘finish’,
-                  COUNT(IF(library.statut_id == 2) ‘reading’,
-                  COUNT(IF(library.statut_id == 3) ‘not_started’
+            $req = $cnx->prepare("SELECT 
+                  COUNT(IF(library.statut_id = 1,1,NULL)) `finish`,
+                  COUNT(IF(library.statut_id = 2,1,NULL)) `reading`,
+                  COUNT(IF(library.statut_id = 3,1,NULL)) `not_started`
                   FROM library
                   WHERE library.user_id = :id
             ");

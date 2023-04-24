@@ -32,7 +32,7 @@ class Model
    {
       return '
       `note`,
-      ` comment `,
+      `comment`,
       `user_id`,
       `statut_id`,
       `book_version_id`
