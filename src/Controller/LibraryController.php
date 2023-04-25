@@ -68,13 +68,20 @@ use Illuminate\Http\Request;
          if($user['user_id'] != 0){
             try {
                $cnx = Cnx::get();
-               $req = $cnx->prepare("SELECT 
-                     COUNT(IF(library.statut_id = 1,1,NULL)) `finish`,
-                     COUNT(IF(library.statut_id = 2,1,NULL)) `reading`,
-                     COUNT(IF(library.statut_id = 3,1,NULL)) `not_started`
-                     FROM library
-                     WHERE library.user_id = :id
-               ");
+
+              $query =  "SELECT statut.statut_name, count(*) as  items_count
+               FROM library
+               JOIN statut ON library.statut_id = statut.statut_id
+               WHERE library.user_id = :id
+               GROUP BY library.statut_id";
+                //$query = "SELECT 
+                //SUM(IF(library.statut_id = 1,1,0)) `finish`,
+                //SUM(IF(library.statut_id = 2,1,0)) `reading`,
+                //SUM(IF(library.statut_id = 3,1,0)) `not_started`
+                //FROM library
+                //WHERE library.user_id = :id
+                  // ";
+               $req = $cnx->prepare($query);
                $req->execute([':id' => $user['user_id']]);
                return $req->fetchAll(PDO::FETCH_ASSOC);
             }

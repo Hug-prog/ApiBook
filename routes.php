@@ -1,13 +1,12 @@
 <?php
 
 use App\Controller\AuthController;
-use App\Controller\AuthorController;
 use App\Controller\BookController;
 use App\Controller\BookVersionController;
 use App\Controller\LibraryController;
 use App\Controller\TagController;
 use App\Controller\WishListController;
-use Illuminate\Support\Facades\Auth;
+
 
 $user = $_SESSION['auth'];
 
