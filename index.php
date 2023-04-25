@@ -3,6 +3,16 @@
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+session_start();
+if(!isset($_SESSION['auth'])){
+  $_SESSION['auth'] = [
+    'authorization' => false,
+    'user_id'=>0,
+    'email'=>''
+  ];
+}
+
+
 include 'config.php';
 
 // Dispatch the request through the router
@@ -25,3 +35,5 @@ catch(\Exception $e) {
   ]);
   
 }
+
+//dd($_SESSION['auth']);

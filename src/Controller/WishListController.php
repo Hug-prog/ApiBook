@@ -8,9 +8,15 @@ use Illuminate\Http\Request;
 
 class WishListController
 {
-   public function getWishList($id)
+   public function getWishList()
    {
-      return ActionsBdd::getItemById('wishlist', $id, 'user_id');
+      $user = $_SESSION['auth'];
+      if($user['user_id'] != 0){
+         return ActionsBdd::getItemById('wishlist', $user['user_id'], 'user_id');
+      }
+      else{
+         return 'premission denied';
+      }
    }
 
    public function addBookVersion(Request $request)

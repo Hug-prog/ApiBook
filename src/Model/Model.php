@@ -3,6 +3,13 @@ namespace App\Model;
 
 class Model
 {
+   public static function getUsersModel()
+   {
+      return '
+      `email`,
+      `password`
+      ';
+   }
    public static function getBookModel()
    {
       return '
