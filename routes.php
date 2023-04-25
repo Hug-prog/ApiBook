@@ -10,6 +10,7 @@ use App\Controller\WishListController;
 use Illuminate\Support\Facades\Auth;
 
 $user = $_SESSION['auth'];
+
 if($user['user_id'] != 0){
    
    // ***************library**********************
@@ -109,9 +110,6 @@ if($user['user_id'] != 0){
    // create tag
    $router->post('/api/book/tag/',[TagController::class,'create']);
 
-}
-else{
-   return 'permission denied';
 }
 
 
