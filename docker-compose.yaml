@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  database: 
+    image: mariadb
+    container_name: mariadb 
+    restart: no
+    environment: 
+      MYSQL_ROOT_PASSWORD: hug-prog-mariadb 
+    volumes:
+      - data:/var/lib/mysql
+    ports: 
+      - '3306:3306'
+
+volumes:
+  data:
+
+
+  
