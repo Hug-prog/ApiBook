@@ -6,52 +6,63 @@ namespace App\Actions;
       public static function getAll($table)
       {
          try {
-             $cnx = Cnx::get();
-
-             $req = $cnx->prepare("select * from $table");
-             $req->execute();
-             $resultat = $req->fetchAll(\PDO::FETCH_ASSOC);
+             return  Cnx::get()->selectCollection($table)->find([], [
+                'limit' => 10,
+                'skip' => 0
+             ])->toArray(); 
          }
-         catch (\PDOException $e){
+         catch (\Exception $e){
             
             print "Erreur !: " . $e->getMessage();
              die();
-         }
-         return $resultat;  
+         } 
       }
 
-      public static function getItemById($table, $id, $id_column = 'id')
+      public static function getItemById($table, $id)
       {
         try {
-            $cnx = Cnx::get();
-            $req = $cnx->prepare("select * from `{$table}` where `{$id_column}` = :id");
-            $req->execute([':id' => $id]);
-            $resultat = $req->fetchAll(\PDO::FETCH_ASSOC);
+            
+            return  Cnx::get()->selectCollection($table)->findOne(['_id' => new \MongoDB\BSON\ObjectId($id)]); 
+
+
         }
-        catch (\PDOException $e) {
+        catch (\Exception $e) {
             print "Erreur !: " . $e->getMessage();
             die();
         }
-        return $resultat;
       }
 
-      public static function insertData($table, $alias, $data)
+      public static function insertData($table,$data)
       {
-        $symbolTabs = array_fill(0, count($data), '?');
+
         try {
-            $cnx = Cnx::get();
-            $query = "INSERT INTO `$table` ({$alias}) VALUES (";
-            $query .= implode(", ", $symbolTabs);
-            $query .= ")";
-            $req = $cnx->prepare($query);
-            $req->execute($data);
-            $resultat = $req->fetchAll(\PDO::FETCH_ASSOC);
+            return Cnx::get()->selectCollection($table)->insertOne($data);
         }
-        catch (\PDOException $e) {
+        catch (\Exception $e) {
             print "Erreur !: " . $e->getMessage();
             die();
         }
-        return $resultat;
       }
 
+      public static function delete($table,$id)
+      {
+        try {
+            return Cnx::get()->selectCollection($table)->deleteOne(['_id' => new \MongoDB\BSON\ObjectId($id)]);
+        }
+        catch (\Exception $e) {
+            print "Erreur!: ". $e->getMessage();
+            die();
+        }
+      }
+
+      public static function update($table,$id,$data)
+      {
+        try {
+            return Cnx::get()->selectCollection($table)->updateOne(['_id' => new \MongoDB\BSON\ObjectId($id)],$data);
+        }
+        catch (\Exception $e) {
+            print "Erreur!: ". $e->getMessage();
+            die();
+        }               
+      }
    }

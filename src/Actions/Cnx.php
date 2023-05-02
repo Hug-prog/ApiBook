@@ -1,16 +1,22 @@
 <?php
 namespace App\Actions;
 
+use Exception;
+use MongoDB\Client;
+
    abstract class Cnx
    {
        protected static $connection = null;
    
+       /**
+        * @return \MongoDB\Database
+        */
        public static function get()
        {
            if (!self::$connection) {
                try {
                    self::$connection = self::createConnection();
-               } catch (\PDOException $e) {
+               } catch (Exception $e) {
                    // Log db error message
                    // $e->getMessage()
                    throw new \Exception('Database ERROR');
@@ -22,16 +28,13 @@ namespace App\Actions;
    
        protected static function createConnection()
        {
-           $host = 'localhost';
-           $port = 3306;
-           $database = 'book';
-           $user = 'root';
-           $password = '';
-           $dsn = "mysql:host={$host}:{$port};dbname={$database}";
-   
-           return new \PDO($dsn, $user, $password, [
-               \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-               \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC
-           ]);
+            // start mongod process on your instance first
+            $client = new \MongoDB\Client('mongodb://localhost:27017');
+            
+            // select a database (will be created automatically if it not exists)
+            return $client->selectDatabase('book');
+            
+            // select a collection (will be created automatically if it not exists)
+            //$coll = $db->selectCollection("mycoll");
        }
    }

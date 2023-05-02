@@ -1,16 +1,17 @@
 <?php
 
 use App\Controller\AuthController;
+use App\Controller\AuthorController;
 use App\Controller\BookController;
 use App\Controller\BookVersionController;
+use App\Controller\EditionController;
 use App\Controller\LibraryController;
 use App\Controller\TagController;
 use App\Controller\WishListController;
 
 
 $user = $_SESSION['auth'];
-
-if($user['user_id'] != 0){
+if(strlen($user['user_id'])>0){
    
    // ***************library**********************
    // ***get
@@ -88,26 +89,23 @@ if($user['user_id'] != 0){
    // ***get
 
    // get all book
-   $router->get('/api/book/',  [BookController::class, 'getAll']);
+   $router->get('/api/book/',  [BookController::class, 'getAll']);//ok
 
    // get book by id
-   $router->get('/api/book/{id}',[BookController::class, 'getBook']);
+   $router->get('/api/book/{id}',[BookController::class, 'getBook']);//ok
 
    // ***post
 
    // create book
-   $router->post('/api/book/',[BookController::class, 'create']);
+   $router->post('/api/book/',[BookController::class, 'create']); // ok
+
+   // update tag 
+   $router->post('/api/book/tags/update/',[BookController::class, 'updateTags']); // ok
+
 
    // *** delete
-   //delete book tag
-   $router->delete('/api/book/{bookId}/tag/{tagId}',[TagController::class,'delete']);
-
-
-   // ***************tag**********************
-   // ***get
-   // ***post
-   // create tag
-   $router->post('/api/book/tag/',[TagController::class,'create']);
+   //delete book by id
+   $router->delete('/api/book/{id}',[BookController::class,'delete']);//ok∏
 
 }
 
@@ -118,8 +116,8 @@ if($user['user_id'] != 0){
 // get auth
 
 // ***post
-$router->post('/api/auth/login',[AuthController::class, 'login']);
-$router->post('/api/auth/register',[AuthController::class, 'register']);
-$router->post('/api/auth/logout',[AuthController::class, 'logout']);
+$router->post('/api/auth/login',[AuthController::class, 'login']);//ok
+$router->post('/api/auth/register',[AuthController::class, 'register']);//ok
+$router->post('/api/auth/logout',[AuthController::class, 'logout']);//ok
 
 // create user

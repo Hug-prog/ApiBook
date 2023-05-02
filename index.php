@@ -1,9 +1,11 @@
 <?php
 
+use App\Actions\Cnx;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 session_start();
+
 if(!isset($_SESSION['auth'])){
   $_SESSION['auth'] = [
     'authorization' => false,
@@ -14,7 +16,6 @@ if(!isset($_SESSION['auth'])){
 
 
 include 'config.php';
-
 // Dispatch the request through the router
 try {
   $response = $router->dispatch($request);
@@ -24,6 +25,7 @@ try {
   $jsonResponse->send();
 } 
 catch(NotFoundHttpException $e) {
+
   http_response_code(404);
 
 }

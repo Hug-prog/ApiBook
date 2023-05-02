@@ -14,19 +14,18 @@ class TagController
      $book_id = $request->book_id;
      $tag_id = $request->tag_id;
      $data = [$book_id,$tag_id];
-     return ActionsBdd::insertData('book_tag',Model::getTagsModel(),$data);
+     //return Cnx::get()->selectCollection('tag')->insertOne(['book_id'=>$book_id,'tag_id'=>$tag_id]);
    }
 
    public function delete($bookId,$tagId)
    {
-      
-      try {    
-         $cnx =Cnx::get();
-         $req = $cnx->prepare("DELETE FROM book_tag WHERE book_id=:book_id AND tag_id=:tag_id;");
-         $req->execute([':book_id'=>$bookId,':tag_id'=>$tagId]);
-         } catch (PDOException $e) {
-            print($e);
-            die();
-      }
+      // try {    
+      //    $cnx =Cnx::get();
+      //    $req = $cnx->prepare("DELETE FROM book_tag WHERE book_id=:book_id AND tag_id=:tag_id;");
+      //    $req->execute([':book_id'=>$bookId,':tag_id'=>$tagId]);
+      //    } catch (PDOException $e) {
+      //       print($e);
+      //       die();
+      // }
    }
 }

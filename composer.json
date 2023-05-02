@@ -2,7 +2,8 @@
 	"name": "forca/book-marcket",
 	"require": {
 		"illuminate/events": "^8.0",
-		"illuminate/routing": "^8.0"
+		"illuminate/routing": "^8.0",
+		"mongodb/mongodb": "^1.15"
 	},
 	"autoload": {
 		"psr-4": {

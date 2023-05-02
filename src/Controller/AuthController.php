@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Actions\ActionsBdd;
+use App\Actions\Cnx;
 use App\Model\Model;
 use Illuminate\Http\Request;
 
@@ -12,8 +13,7 @@ class AuthController
 
    public function getAuth($email)
    {
-     return ActionsBdd::getItemById('users', $email,'email');
-     
+     return Cnx::get('users')->selectCollection('users')->findOne(['email' => $email]);     
    }
 
 
@@ -22,13 +22,13 @@ class AuthController
       $email = $request->email;
       $password = $request->password;
       $user = $this->getAuth($email);
-      if(isset($user)){
-         if(password_verify($password, $user[0]['password']))
+      if(isset($user['email'])){
+         if(password_verify($password, $user['password']))
          {
             $_SESSION['auth'] = [
                'authorization' => true,
-               'user_id'=>$user[0]['user_id'],
-               'email'=>$user[0]['email']
+               'user_id'=> $user['_id'],
+               'email'=>$user['email']
              ];
              return $_SESSION['auth'];
          }
@@ -48,7 +48,7 @@ class AuthController
       $password = $request->password;  
       $hash =  password_hash($password, PASSWORD_DEFAULT);
       $data = [$email,$hash];
-      return ActionsBdd::insertData('users',Model::getUsersModel(),$data);
+      return Cnx::get()->selectCollection('users')->insertOne(['email'=>$email, 'password'=>$hash]);
    }
 
 
