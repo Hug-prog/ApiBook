@@ -19,13 +19,23 @@ use App\Model\Model;
          return ActionsBdd::getItemById('book', $id);
       }
 
+      public function getAllBookByAuthor($name)
+      {
+         return ActionsBdd::getItemByName("book", 'authors[author_first_name]',$name);
+      }
+
+      public function getAllBookBytags($name)
+      {
+         return ActionsBdd::getItemByName("book", 'tags[tag_name]',$name);
+      }
+
       public function create(Request $request)
       {
          $libelle = $request->libelle;
          $description = $request->description;
          $author_first_name = $request->author_first_name;
          $author_last_name = $request->author_last_name;
-         $tags= [$request->tags];
+         $tags= ["tag_name"=>$request->tags];
          
          $author = ["author_first_name"=>$author_first_name,"author_last_name" => $author_last_name];
          

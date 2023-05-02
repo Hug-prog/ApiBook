@@ -46,7 +46,7 @@ if(strlen($user['user_id'])>0){
 
    // update comment in book version
    $router->put('/api/library/book/version/info/statut',[LibraryController::class,'updateStatutIdByBookVersion']);
-   ;
+   
 
 
    // ***************wishlist**********************
@@ -63,22 +63,17 @@ if(strlen($user['user_id'])>0){
    // ***************book version**********************
    // ***get
    // get all books version
-   $router->get('/api/book/version/',[BookVersionController::class,'getAllBookVersion']);
+   $router->get('/api/book/version/',[BookVersionController::class,'getAllBookVersion']);//ok
 
-   // get books version by author id
-   $router->get('/api/book/version/author/{id}',[BookVersionController::class,'getAllBookVersionByAuthor']);
+   // get books version by publisher 
+   $router->get('/api/book/version/publisher/{id}',[BookVersionController::class,'getAllBookVersionByPublisher']);// ok
 
-   // get books version by publisher id
-   $router->get('/api/book/version/publisher/{id}',[BookVersionController::class,'getAllBookVersionByPublisher']);
-
-   // get books version by tag id
-   $router->get('/api/book/version/tag/{id}',[BookVersionController::class,'getAllBookVersionByPublisher']);
 
 
    // ***post
 
    // create book version
-   $router->post('/api/book/version/',[BookVersionController::class,'create']);
+   $router->post('/api/book/version/',[BookVersionController::class,'create']);//ok
 
 
 
@@ -93,6 +88,13 @@ if(strlen($user['user_id'])>0){
 
    // get book by id
    $router->get('/api/book/{id}',[BookController::class, 'getBook']);//ok
+
+   // get books version by author 
+   $router->get('/api/book/author/{name}',[BookController::class,'getAllBookByAuthor']);
+
+   // get books  by tag 
+   $router->get('/api/book/tag/{name}',[BookController::class,'getAllBookBytags']);
+
 
    // ***post
 

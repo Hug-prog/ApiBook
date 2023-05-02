@@ -32,6 +32,32 @@ namespace App\Actions;
         }
       }
 
+      public static function getItemByName($table, $itemName,$name)
+      {
+        try {
+            
+            return  Cnx::get()->selectCollection($table)->find([$itemName => $name],[
+                'limit' => 10,
+                'skip' => 0
+             ])->toArray(); 
+
+
+        }
+        catch (\Exception $e) {
+            print "Erreur !: " . $e->getMessage();
+            die();
+        }
+      }
+
+    //   public static function dataRelation($table)
+    //   {
+    //     Cnx::get()->selectCollection($table)->aggregate(
+    //         [
+    //             [['$lookup' => ['from' => 'book', 'localField' => 'book_id', 'foreignField' => '_id', 'as' => 'books']]]
+    //         ]
+    //     );
+    //   }
+
       public static function insertData($table,$data)
       {
 
