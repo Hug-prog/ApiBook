@@ -33,27 +33,6 @@ class BookVersionController
       }
    }
 
-   public function getAllBookVersionByAuthor($id)
-   {
-      try {
-         $cnx = Cnx::get();
-         $req = $cnx->prepare('
-            SELECT book_libelle,book_description,publisher_name,edition_name
-            FROM author
-            INNER JOIN book  ON author.author_id = book.author_id
-            INNER JOIN book_version ON book.book_id = book_version.book_id
-            INNER JOIN publisher ON book_version.publisher_id =publisher.publisher_id
-            INNER JOIN edition ON book_version.edition_id = edition.edition_id
-            WHERE author.author_id = :id
-         ');
-         $req->execute([':id' =>$id]);
-         return $req->fetchAll(PDO::FETCH_ASSOC);
-      }
-      catch (PDOException $e) {
-            print "Erreur !: " . $e->getMessage();
-            die();
-      }
-   }
 
 
    public function getAllBookVersionByPublisher($id)
@@ -68,30 +47,6 @@ class BookVersionController
             INNER JOIN book  ON book_version.book_id = book.book_id
             INNER JOIN author ON book.author_id = author.author_id 
             WHERE author.author_id = :id
-         ');
-         $req->execute([':id' =>$id]);
-         return $req->fetchAll(PDO::FETCH_ASSOC);
-      }
-      catch (PDOException $e) {
-            print "Erreur !: " . $e->getMessage();
-            die();
-      }
-   }
-
-   public function getAllBookVersionByTag($id)
-   {
-      try {
-         $cnx = Cnx::get();
-         $req = $cnx->prepare('
-            SELECT book_libelle,book_description,edition_name,publisher_name
-            FROM tag
-            INNER JOIN book_tag ON tag.tag_id  = have.tag_id
-            INNER JOIN book ON have.book_id = book.book_id
-            INNER JOIN author ON book.author_id = author.author_id 
-            INNER JOIN book_version  ON book.book_id = book_version.book_id
-            INNER JOIN edition ON book_version.edition_id = edition.edition_id
-            INNER JOIN publisher ON book_version.publisher_id =publisher.publisher_id
-            WHERE tag.tag_id = :id
          ');
          $req->execute([':id' =>$id]);
          return $req->fetchAll(PDO::FETCH_ASSOC);

@@ -64,14 +64,8 @@ if($user['user_id'] != 0){
    // get all books version
    $router->get('/api/book/version/',[BookVersionController::class,'getAllBookVersion']);
 
-   // get books version by author id
-   $router->get('/api/book/version/author/{id}',[BookVersionController::class,'getAllBookVersionByAuthor']);
-
    // get books version by publisher id
    $router->get('/api/book/version/publisher/{id}',[BookVersionController::class,'getAllBookVersionByPublisher']);
-
-   // get books version by tag id
-   $router->get('/api/book/version/tag/{id}',[BookVersionController::class,'getAllBookVersionByPublisher']);
 
 
    // ***post
@@ -92,6 +86,13 @@ if($user['user_id'] != 0){
 
    // get book by id
    $router->get('/api/book/{id}',[BookController::class, 'getBook']);
+
+    // get books by tag id
+    $router->get('/api/book/tag/{id}',[BookController::class,'getAllBookByTag']);
+
+      // get books  by author id
+   $router->get('/api/book/author/{id}',[BookController::class,'getAllBookByAuthor']);
+
 
    // ***post
 
