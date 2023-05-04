@@ -20,11 +20,8 @@ namespace App\Actions;
 
       public static function getItemById($table, $id)
       {
-        try {
-            
+        try {     
             return  Cnx::get()->selectCollection($table)->findOne(['_id' => new \MongoDB\BSON\ObjectId($id)]); 
-
-
         }
         catch (\Exception $e) {
             print "Erreur !: " . $e->getMessage();

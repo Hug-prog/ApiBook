@@ -7,6 +7,7 @@ use App\Actions\Cnx;
 use App\Model\Model;
 use PDOException;
 use Illuminate\Http\Request;
+use MongoDB\BSON\ObjectId;
 
    class LibraryController 
    {
@@ -14,44 +15,31 @@ use Illuminate\Http\Request;
       public function getbooks()
       {
          $user = $_SESSION['auth'];
-         if($user['user_id'] != 0){
+         if($user['user_id']){
             try {
-               $cnx = Cnx::get();
-               $req = $cnx->prepare(" SELECT * 
-                  FROM library
-                  INNER JOIN book_version ON book_version.book_version_id = library.book_version_id 
-                  INNER JOIN edition ON edition.edition_id = book_version.edition_id
-                  INNER JOIN book ON book_version.book_id = book.book_id
-                  INNER JOIN author ON book.author_id = author.author_id 
-                  WHERE library.user_id = :id
-               ");
-               $req->execute([':id' => $user['user_id']]);
-               $resultat = $req->fetchAll(PDO::FETCH_ASSOC);
+               return  Cnx::get()->selectCollection('library')->aggregate(
+                  [
+                    [
+                        '$lookup'=>[
+                           "from"=> "book_version",
+                           "localField"=> "book_version_id",
+                           "foreignField"=> "_id",
+                           "as"=> "book_version",
+                        ]
+                     ],
+                     [
+                        '$lookup'=>[
+                           "from"=> "book",
+                           "localField"=> "book_version.book_id",
+                           "foreignField"=> "_id",
+                           "as"=> "book",
+                        ],
+                     ]
+                    
+                  ]
+                  )->toArray();
             }
-            catch (PDOException $e) {
-                  print "Erreur !: " . $e->getMessage();
-                  die();
-            }
-
-            return $resultat;
-         }
-         else{
-            return 'premission denied';
-         }
-        
-      }
-
-      public function getNumberBooksVersions()
-      {
-         $user = $_SESSION['auth'];
-         if($user['user_id'] != 0){
-            try {
-               $cnx = Cnx::get();
-               $req = $cnx->prepare("SELECT COUNT(book_version_id) FROM library WHERE library.user_id = :id");
-               $req->execute([':id' => $user['user_id']]);
-               return $req->fetchAll(PDO::FETCH_ASSOC);
-            }
-            catch (PDOException $e) {
+            catch (\Exception $e) {
                   print "Erreur !: " . $e->getMessage();
                   die();
             }
@@ -62,50 +50,55 @@ use Illuminate\Http\Request;
         
       }
 
-      public function getNumberBooksVersionsByStatut()
-      {
-         $user = $_SESSION['auth'];
-         if($user['user_id'] != 0){
-            try {
-               $cnx = Cnx::get();
+      // public function getNumberBooksVersions()
+      // {
+      //    $user = $_SESSION['auth'];
+      //    if($user['user_id'] != 0){
+      //       try {
+      //          $cnx = Cnx::get();
+      //          $req = $cnx->prepare("SELECT COUNT(book_version_id) FROM library WHERE library.user_id = :id");
+      //          $req->execute([':id' => $user['user_id']]);
+      //          return $req->fetchAll(PDO::FETCH_ASSOC);
+      //       }
+      //       catch (PDOException $e) {
+      //             print "Erreur !: " . $e->getMessage();
+      //             die();
+      //       }
+      //    }
+      //    else{
+      //       return 'premission denied';
+      //    }
+        
+      // }
 
-              $query =  "SELECT statut.statut_name, count(*) as  items_count
-               FROM library
-               JOIN statut ON library.statut_id = statut.statut_id
-               WHERE library.user_id = :id
-               GROUP BY library.statut_id";
-                //$query = "SELECT 
-                //SUM(IF(library.statut_id = 1,1,0)) `finish`,
-                //SUM(IF(library.statut_id = 2,1,0)) `reading`,
-                //SUM(IF(library.statut_id = 3,1,0)) `not_started`
-                //FROM library
-                //WHERE library.user_id = :id
-                  // ";
-               $req = $cnx->prepare($query);
-               $req->execute([':id' => $user['user_id']]);
-               return $req->fetchAll(PDO::FETCH_ASSOC);
-            }
-            catch (PDOException $e) {
-                  print "Erreur !: " . $e->getMessage();
-                  die();
-            }
-         }
-         else{
-            return 'premission denied';
-         }
+      // public function getNumberBooksVersionsByStatut()
+      // {
+      //    $user = $_SESSION['auth'];
+      //    if($user['user_id']){
+      //       $result = Cnx::get()->selectCollection("library")->find(['statut_name'=>"lu"], [
+      //          'limit' => 10,
+      //          'skip' => 0
+      //       ])->toArray(); 
+      //       //count($result)
+      //       dd($result);
+      //    }
+      //    else{
+      //       return 'premission denied';
+      //    }
          
-      }
+      // }
 
       public function addBookVersion(Request $request)
       {
          $user = $_SESSION['auth'];
-         if($user['user_id'] != 0){
+         if($user['user_id']){
             $book_version_id = $request->book_version_id; 
             $note = $request->note;
             $comment = $request->comment;
-            $statut_id = $request->statut_id;
-            $data = [$note,$comment,$user['user_id'],$statut_id,$book_version_id];
-            return ActionsBdd::insertData('library',Model::getLibraryBookVersionModel(),$data);
+            $statut_name = $request->statut_name;
+            $data = ["note"=>$note,"comment"=>$comment,"user"=>$user['user_id'],"statut_name"=>$statut_name,"book_version_id"=>new ObjectId($book_version_id)];
+            $result = ActionsBdd::insertData('library',$data);
+            return $result->getInsertedCount() . ' documents inserted';
          }
          else{
             return 'premission denied';
@@ -115,45 +108,20 @@ use Illuminate\Http\Request;
 
    public function getInfoByBookVersion($id)
    {
-      $resultat = array();
-      try {
-         $cnx = Cnx::get();
-         $req = $cnx->prepare(" 
-            select note,comment,status_name
-            from library
-            JOIN statut ON statut.statut_id = library.statut_id  
-            where book_version_id = :id
-         ");
-         $req->execute([':id'=>$id]);
-         $resultat = $req->fetchAll(PDO::FETCH_ASSOC);
-      }
-      catch (PDOException $e) {
-            print "Erreur !: " . $e->getMessage();
-            die();
-      }
-
-      return $resultat;
+      return ActionsBdd::getItemById('library',$id);
    }
 
    public function updateInfoByBookVersion(Request $request)
    {
       $user = $_SESSION['auth'];
       if($user['user_id'] != 0){
-         
-         $book_version_id = $request->book_version_id; 
          $note = $request->note;
          $comment = $request->comment;
-         $statut_id = $request->statut_id;
+         $statut_name = $request->statut_name;
+         $library_id = $request->library_id;
+         $result = ActionsBdd::update("library",$library_id,['$set' => ['note' => $note,'comment' => $comment,'statut_name' => $statut_name]]);
+         return $result->getModifiedCount(). ' statut updated';
          
-         try {
-            $cnx = Cnx::get();
-            $req = $cnx->prepare("UPDATE `library` SET  note=$note,comment=$comment,statut_id=$statut_id WHERE book_version_id=:book_version__id AND user_id=:user_id;");
-            $req->execute([':book_version_id' => $book_version_id,':user_id' => $user['user_id']]);
-
-         } catch (PDOException $e) {
-               print "Erreur !: " . $e->getMessage();
-               die();
-         }
       }
       else{
          return 'premission denied';
@@ -164,18 +132,11 @@ use Illuminate\Http\Request;
    {
       $user = $_SESSION['auth'];
       if($user['user_id'] != 0){
-         $book_version_id = $request->book_version_id;
          $note = $request->note;
-         try {
-               
-            $cnx = Cnx::get();
-            $req = $cnx->prepare("UPDATE `library` SET  note=$note WHERE  book_version_id=:book_version__id AND user_id=:user_id;");
-            $req->execute([':book_version_id' => $book_version_id,':user_id' => $user['user_id']]);
-
-         } catch (PDOException $e) {
-               print "Erreur !: " . $e->getMessage();
-               die();
-         }
+         $library_id = $request->library_id;
+         $result = ActionsBdd::update("library",$library_id,['$set' => ['note' => $note]]);
+         return $result->getModifiedCount(). ' statut updated';
+        
       }
       else{
          return 'premission denied';
@@ -186,19 +147,11 @@ use Illuminate\Http\Request;
    public function updatecommentByBookVersion(Request $request)
    {
       $user = $_SESSION['auth'];
-      if($user['user_id'] != 0){
+      if($user['user_id']){
          $comment = $request->comment;
-         $book_version_id = $request->book_version_id;
-         try {
-               
-            $cnx = Cnx::get();
-            $req = $cnx->prepare("UPDATE `library` SET  comment=$comment WHERE book_version_id=:book_version__id AND user_id=:user_id ;");
-            $req->execute([':book_version_id' => $book_version_id,':user_id' =>$user['user_id']]);
-
-         } catch (PDOException $e) {
-               print "Erreur !: " . $e->getMessage();
-               die();
-         }
+         $library_id = $request->library_id;
+         $result = ActionsBdd::update("library",$library_id,['$set' => ['comment' => $comment]]);
+         return $result->getModifiedCount(). ' statut updated';
       }
       else{
          return 'premission denied';
@@ -209,19 +162,11 @@ use Illuminate\Http\Request;
    public function updateStatutIdByBookVersion(Request $request)
    {
       $user = $_SESSION['auth'];
-      if($user['user_id'] != 0){
-         $book_version_id = $request->book_version_id;
-         $statut_id = $request->statut_id;
-         try {
-               
-            $cnx = Cnx::get();
-            $req = $cnx->prepare("UPDATE `library` SET  statut_id=$statut_id WHERE book_version_id=:book_version__id AND user_id=:user_id ;");
-            $req->execute([':book_version_id' => $book_version_id,':user_id' => $user['user_id']]);
-
-         } catch (PDOException $e) {
-               print "Erreur !: " . $e->getMessage();
-               die();
-         }
+      if($user['user_id']){
+         $library_id = $request->library_id;
+         $statut_name = $request->statut_name;
+         $result = ActionsBdd::update("library",$library_id,['$set' => ['statut_name' => $statut_name]]);
+         return $result->getModifiedCount(). ' statut updated';     
       }
       else{
          return 'premission denied';

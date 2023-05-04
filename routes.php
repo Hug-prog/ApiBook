@@ -14,7 +14,7 @@ if($user["authorization"]){
    // ***get
 
    // get all book in library by user
-   $router->get('/api/library',[LibraryController::class,'getbooks']);  
+   $router->get('/api/library',[LibraryController::class,'getbooks']); //ok
 
    // get number of books versions in library
    $router->get('/api/library/book/version/number',[LibraryController::class,'getNumberBooksVersions']);
@@ -23,26 +23,26 @@ if($user["authorization"]){
    $router->get('/api/library/book/version/statut/number',[LibraryController::class,'getNumberBooksVersionsByStatut']);
 
    // get info by book version
-   $router->get('/api/library/book/version/info/{id}',[LibraryController::class,'getInfoByBookVersion']);
+   $router->get('/api/library/book/version/info/{id}',[LibraryController::class,'getInfoByBookVersion']);// ok
 
    // ***post
 
    // instert book version in library
-   $router->post('/api/library/book/version/',[LibraryController::class,'addBookVersion']);
+   $router->post('/api/library/book/version/',[LibraryController::class,'addBookVersion']);//ok
 
    //  ***put
 
    // update statut,note,comment by book version
-   $router->put('/api/library/book/version/info/',[LibraryController::class,'updateInfoByBookVersion']);
+   $router->post('/api/library/book/version/info/',[LibraryController::class,'updateInfoByBookVersion']);// ok
 
-   // update note in book version
-   $router->put('/api/library/book/version/info/note',[LibraryController::class,'updateNoteByBookVersion']);
+   // update note  book version in library
+   $router->post('/api/library/book/version/info/note',[LibraryController::class,'updateNoteByBookVersion']);// ok
 
-   // update comment in book version
-   $router->put('/api/library/book/version/info/comment',[LibraryController::class,'updatecommentByBookVersion']);
+   // update comment  book version in library
+   $router->post('/api/library/book/version/info/comment',[LibraryController::class,'updatecommentByBookVersion']);// ok
 
-   // update comment in book version
-   $router->put('/api/library/book/version/info/statut',[LibraryController::class,'updateStatutIdByBookVersion']);
+   // update statut  book version in library
+   $router->post('/api/library/book/version/info/statut',[LibraryController::class,'updateStatutIdByBookVersion']);//ok
    
 
 
