@@ -1,17 +1,14 @@
 <?php
 
 use App\Controller\AuthController;
-use App\Controller\AuthorController;
 use App\Controller\BookController;
 use App\Controller\BookVersionController;
-use App\Controller\EditionController;
 use App\Controller\LibraryController;
-use App\Controller\TagController;
 use App\Controller\WishListController;
 
 
 $user = $_SESSION['auth'];
-if(strlen($user['user_id'])>0){
+if($user["authorization"]){
    
    // ***************library**********************
    // ***get
@@ -52,11 +49,11 @@ if(strlen($user['user_id'])>0){
    // ***************wishlist**********************
    // ***get
    // get book version by user
-   $router->get('/api/wishlist/',[WishListController::class,'getWishList']);
+   $router->get('/api/wishlist/',[WishListController::class,'getWishList']);// ok 
 
    // ***post
    // insert book version in wishlist
-   $router->post('/api/wishList/book/version/',[WishListController::class,'addBookVersion']);
+   $router->post('/api/wishlist/book/',[WishListController::class,'addBook']);//ok
 
 
 
@@ -89,11 +86,11 @@ if(strlen($user['user_id'])>0){
    // get book by id
    $router->get('/api/book/{id}',[BookController::class, 'getBook']);//ok
 
-   // get books version by author 
-   $router->get('/api/book/author/{name}',[BookController::class,'getAllBookByAuthor']);
+   // get books  by author 
+   $router->get('/api/book/author/{name}',[BookController::class,'getAllBookByAuthor']);// ok
 
    // get books  by tag 
-   $router->get('/api/book/tag/{name}',[BookController::class,'getAllBookBytags']);
+   $router->get('/api/book/tag/{name}',[BookController::class,'getAllBookBytags']);//ok
 
 
    // ***post
@@ -107,7 +104,7 @@ if(strlen($user['user_id'])>0){
 
    // *** delete
    //delete book by id
-   $router->delete('/api/book/{id}',[BookController::class,'delete']);//ok∏
+   $router->delete('/api/book/{id}',[BookController::class,'delete']);//ok
 
 }
 
